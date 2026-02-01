@@ -3,10 +3,7 @@ package org.skypro.skyshop.product;
 public abstract class Product {
     private final String name;
 
-    /**
-     * Конструктор товара
-     * @param name название товара
-     */
+
     protected Product(String name) {
         this.name = name;
     }

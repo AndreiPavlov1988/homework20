@@ -6,11 +6,7 @@ package org.skypro.skyshop.product;
 public class SimpleProduct extends Product {
     private final int price;
 
-    /**
-     * Конструктор обычного товара
-     * @param name название товара
-     * @param price цена товара
-     */
+
     public SimpleProduct(String name, int price) {
         super(name);
         this.price = price;

@@ -41,11 +41,7 @@ public class DiscountedProduct extends Product {
         return discountPercent;
     }
 
-    /**
-     * Проверяет, является ли товар специальным
-     * @return true - товар со скидкой является специальным
-     */
-    @Override
+
     public boolean isSpecial() {
         return true;
     }

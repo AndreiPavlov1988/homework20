@@ -29,10 +29,7 @@ public class FixPriceProduct extends Product {
         return FIXED_PRICE;
     }
 
-    /**
-     * Проверяет, является ли товар специальным
-     * @return true - товар с фиксированной ценой является специальным
-     */
+
     @Override
     public boolean isSpecial() {
         return true;
