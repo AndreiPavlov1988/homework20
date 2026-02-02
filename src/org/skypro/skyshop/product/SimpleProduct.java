@@ -12,6 +12,7 @@ public class SimpleProduct extends Product {
         this.price = price;
     }
 
+
     /**
      * Получить цену товара
      * @return цена товара

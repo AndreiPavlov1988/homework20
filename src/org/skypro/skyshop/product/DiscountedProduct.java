@@ -33,6 +33,7 @@ public class DiscountedProduct extends Product {
         return basePrice;
     }
 
+
     /**
      * Получить размер скидки в процентах
      * @return размер скидки

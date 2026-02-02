@@ -21,6 +21,7 @@ public class FixPriceProduct extends Product {
         return FIXED_PRICE;
     }
 
+
     /**
      * Получить значение фиксированной цены как константы
      * @return значение фиксированной цены

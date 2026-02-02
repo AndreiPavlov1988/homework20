@@ -70,6 +70,7 @@ public class ProductBasket {
         System.out.println("Итого: " + getTotalPrice());
         System.out.println("Специальных товаров: " + countSpecialProducts());
     }
+
     /**
      * Метод проверки наличия продукта в корзине по имени
      * @param productName имя продукта для поиска

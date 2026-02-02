@@ -10,6 +10,7 @@ public class App {
         public static void main(String[] args) {
                 System.out.println("=== Демонстрация работы интернет-магазина с новыми типами товаров ===\n");
 
+
                 Product laptop = new SimpleProduct("Ноутбук", 75000);
                 Product discountedPhone = new DiscountedProduct("Смартфон", 45000, 20); // 20% скидка
                 Product fixPriceHeadphones = new FixPriceProduct("Наушники");
