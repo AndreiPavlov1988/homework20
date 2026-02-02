@@ -20,7 +20,6 @@ public class SimpleProduct extends Product {
     public int getPrice() {
         return price;
     }
-
     /**
      * Проверяет, является ли товар специальным
      * @return false - обычный товар не является специальным

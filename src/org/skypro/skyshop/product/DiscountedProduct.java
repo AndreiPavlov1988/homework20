@@ -41,7 +41,6 @@ public class DiscountedProduct extends Product {
         return discountPercent;
     }
 
-
     public boolean isSpecial() {
         return true;
     }
