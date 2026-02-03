@@ -5,75 +5,139 @@ import org.skypro.skyshop.product.FixPriceProduct;
 import org.skypro.skyshop.product.Product;
 import org.skypro.skyshop.basket.ProductBasket;
 import org.skypro.skyshop.product.SimpleProduct;
+import org.skypro.skyshop.article.Article;
+import org.skypro.skyshop.search.SearchEngine;
+import org.skypro.skyshop.search.Searchable;
 
 public class App {
         public static void main(String[] args) {
-                System.out.println("=== Демонстрация работы интернет-магазина с новыми типами товаров ===\n");
+                System.out.println("=== Демонстрация работы интернет-магазина с поиском ===\n");
 
+                // Создаем товары разных типов
+                Product laptop = new SimpleProduct("Ноутбук Lenovo", 75000);
+                Product discountedPhone = new DiscountedProduct("Смартфон Samsung", 45000, 20);
+                Product fixPriceHeadphones = new FixPriceProduct("Наушники Sony");
+                Product mouse = new SimpleProduct("Мышь беспроводная", 1500);
+                Product discountedKeyboard = new DiscountedProduct("Клавиатура механическая", 3500, 10);
 
-                Product laptop = new SimpleProduct("Ноутбук", 75000);
-                Product discountedPhone = new DiscountedProduct("Смартфон", 45000, 20); // 20% скидка
-                Product fixPriceHeadphones = new FixPriceProduct("Наушники");
-                Product mouse = new SimpleProduct("Мышь", 1500);
-                Product discountedKeyboard = new DiscountedProduct("Клавиатура", 3500, 10); // 10% скидка
-                Product fixPriceMousePad = new FixPriceProduct("Коврик для мыши");
+                // Создаем статьи о товарах
+                Article laptopArticle = new Article(
+                        "Обзор нового ноутбука Lenovo",
+                        "Новый ноутбук Lenovo обладает мощным процессором и длительным временем работы от батареи. " +
+                                "Идеально подходит для работы и учебы."
+                );
 
-                // Создаем корзину
+                Article phoneArticle = new Article(
+                        "Сравнение смартфонов Samsung и Apple",
+                        "В этой статье мы сравниваем флагманские модели Samsung и Apple. " +
+                                "Рассматриваем камеры, производительность и срок работы от батареи."
+                );
+
+                Article headphonesArticle = new Article(
+                        "Как выбрать наушники для музыки",
+                        "Руководство по выбору наушников: типы, характеристики, рекомендации. " +
+                                "Рассматриваем проводные и беспроводные модели."
+                );
+
+                Article gamingArticle = new Article(
+                        "Лучшая игровая периферия 2024",
+                        "Обзор лучшей игровой периферии: мыши, клавиатуры, коврики. " +
+                                "Рекомендации для геймеров разного уровня."
+                );
+
+                // Создаем поисковый движок
+                SearchEngine searchEngine = new SearchEngine(20);
+
+                // Добавляем все товары в поисковый движок
+                searchEngine.add(laptop);
+                searchEngine.add(discountedPhone);
+                searchEngine.add(fixPriceHeadphones);
+                searchEngine.add(mouse);
+                searchEngine.add(discountedKeyboard);
+
+                // Добавляем статьи в поисковый движок
+                searchEngine.add(laptopArticle);
+                searchEngine.add(phoneArticle);
+                searchEngine.add(headphonesArticle);
+                searchEngine.add(gamingArticle);
+
+                System.out.println("В поисковый движок добавлено объектов: " + searchEngine.getCount());
+                System.out.println("Емкость поискового движка: " + searchEngine.getCapacity());
+                System.out.println();
+
+                // Демонстрация поиска
+                System.out.println("=== Тестирование поиска ===");
+
+                System.out.println("\n1. Поиск по слову 'ноутбук':");
+                Searchable[] results1 = searchEngine.search("ноутбук");
+                printSearchResults(results1);
+
+                System.out.println("\n2. Поиск по слову 'Samsung':");
+                Searchable[] results2 = searchEngine.search("Samsung");
+                printSearchResults(results2);
+
+                System.out.println("\n3. Поиск по слову 'игровой':");
+                Searchable[] results3 = searchEngine.search("игровой");
+                printSearchResults(results3);
+
+                System.out.println("\n4. Поиск по слову 'беспроводная':");
+                Searchable[] results4 = searchEngine.search("беспроводная");
+                printSearchResults(results4);
+
+                System.out.println("\n5. Поиск по слову 'камера':");
+                Searchable[] results5 = searchEngine.search("камера");
+                printSearchResults(results5);
+
+                System.out.println("\n6. Поиск по слову 'xyz' (нет результатов):");
+                Searchable[] results6 = searchEngine.search("xyz");
+                printSearchResults(results6);
+
+                // Демонстрация работы с корзиной (из предыдущей домашки)
+                System.out.println("\n=== Демонстрация работы корзины ===");
                 ProductBasket basket = new ProductBasket();
-
-                System.out.println("1. Добавляем товары разных типов в корзину:");
                 basket.addProduct(laptop);
                 basket.addProduct(discountedPhone);
                 basket.addProduct(fixPriceHeadphones);
                 basket.addProduct(mouse);
-                basket.addProduct(discountedKeyboard);
-                System.out.println();
 
-                System.out.println("2. Попытка добавления товара в заполненную корзину:");
-                basket.addProduct(fixPriceMousePad); // Должно вывести "Невозможно добавить продукт"
-                System.out.println();
-
-                System.out.println("3. Печать содержимого корзины с разными типами товаров:");
+                System.out.println("\nСодержимое корзины:");
                 basket.printContents();
-                System.out.println();
 
-                System.out.println("4. Получение общей стоимости корзины:");
-                System.out.println("   Общая стоимость: " + basket.getTotalPrice() + " руб.");
-                System.out.println();
+                // Демонстрация метода getStringRepresentation()
+                System.out.println("\n=== Демонстрация getStringRepresentation() ===");
+                System.out.println("Товар: " + laptop.getStringRepresentation());
+                System.out.println("Статья: " + laptopArticle.getStringRepresentation());
 
-                System.out.println("5. Поиск товаров в корзине:");
-                System.out.println("   Товар 'Смартфон' в корзине: " + basket.containsProduct("Смартфон"));
-                System.out.println("   Товар 'Планшет' в корзине: " + basket.containsProduct("Планшет"));
-                System.out.println();
+                System.out.println("\n=== Демонстрация завершена ===");
+        }
 
-                System.out.println("6. Очистка корзины:");
-                basket.clear();
-                System.out.println("   Корзина очищена");
-                System.out.println();
+        /**
+         * Выводит результаты поиска
+         * @param results массив результатов поиска
+         */
+        private static void printSearchResults(Searchable[] results) {
+                boolean hasResults = false;
 
-                System.out.println("7. Печать содержимого пустой корзины:");
-                basket.printContents();
-                System.out.println();
+                for (int i = 0; i < results.length; i++) {
+                        if (results[i] != null) {
+                                hasResults = true;
+                                System.out.println((i + 1) + ". " + results[i].getStringRepresentation());
 
-                System.out.println("8. Создание и тестирование новой корзины со специальными товарами:");
-                ProductBasket specialBasket = new ProductBasket();
+                                // Для статей выводим еще и отрывок текста
+                                if (results[i].getContentType().equals("ARTICLE")) {
+                                        String content = results[i].getSearchTerm();
+                                        // Выводим первые 50 символов текста
+                                        if (content.length() > 50) {
+                                                System.out.println("   " + content.substring(0, 50) + "...");
+                                        } else {
+                                                System.out.println("   " + content);
+                                        }
+                                }
+                        }
+                }
 
-                // Добавляем только специальные товары
-                specialBasket.addProduct(new DiscountedProduct("Телевизор", 50000, 15));
-                specialBasket.addProduct(new FixPriceProduct("Кабель USB"));
-                specialBasket.addProduct(new DiscountedProduct("Холодильник", 80000, 25));
-
-                System.out.println("Содержимое корзины со специальными товарами:");
-                specialBasket.printContents();
-
-                System.out.println("\n=== Демонстрация завершена ===\n");
-
-                // Дополнительная проверка расчетов
-                System.out.println("=== Проверка расчетов цен ===");
-                DiscountedProduct testProduct = new DiscountedProduct("Тестовый товар", 1000, 30);
-                System.out.println("Товар со скидкой 30% от 1000: " + testProduct.getPrice() + " руб.");
-                System.out.println("Ожидаемый результат: 700 руб. (1000 * 0.7)");
-
-                System.out.println("\nЗначение фиксированной цены: " + FixPriceProduct.getFixedPrice() + " руб.");
+                if (!hasResults) {
+                        System.out.println("Ничего не найдено");
+                }
         }
 }
