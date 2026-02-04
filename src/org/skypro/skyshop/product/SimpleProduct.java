@@ -1,39 +1,35 @@
 package org.skypro.skyshop.product;
 
-/**
- * Класс обычного товара
- */
 public class SimpleProduct extends Product {
     private final int price;
 
-
     public SimpleProduct(String name, int price) {
         super(name);
+        validatePrice(price);
         this.price = price;
     }
 
+    private void validatePrice(int price) {
+        if (price <= 0) {
+            throw new IllegalArgumentException(
+                    "Цена товара должна быть строго больше 0. Получено: " + price
+            );
+        }
+    }
 
-    /**
-     * Получить цену товара
-     * @return цена товара
-     */
+
     @Override
     public int getPrice() {
         return price;
     }
-    /**
-     * Проверяет, является ли товар специальным
-     * @return false - обычный товар не является специальным
-     */
+
+
     @Override
     public boolean isSpecial() {
         return false;
     }
 
-    /**
-     * Строковое представление товара
-     * @return строка формата "название: цена"
-     */
+
     @Override
     public String toString() {
         return getName() + ": " + getPrice();
