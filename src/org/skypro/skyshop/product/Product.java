@@ -7,27 +7,32 @@ public abstract class Product implements Searchable {
 
 
     protected Product(String name) {
+        validateName(name);
         this.name = name;
     }
 
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Название товара не может быть null, пустой строкой или состоять только из пробелов"
+            );
+        }
+    }
 
     @Override
     public String getName() {
         return name;
     }
 
-
     @Override
     public String getSearchTerm() {
         return name;
     }
 
-
     @Override
     public String getContentType() {
         return "PRODUCT";
     }
-
 
     public abstract int getPrice();
 
