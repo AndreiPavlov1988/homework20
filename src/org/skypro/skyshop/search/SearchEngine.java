@@ -1,71 +1,45 @@
 package org.skypro.skyshop.search;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SearchEngine {
-    private final Searchable[] searchables;
-    private int count;
+    private final List<Searchable> searchables;
 
-    /**
-     * Конструктор поискового движка
-     * @param capacity максимальное количество объектов для поиска
-     */
+
     public SearchEngine(int capacity) {
-        this.searchables = new Searchable[capacity];
-        this.count = 0;
+        this.searchables = new ArrayList<>(capacity);
     }
 
-    /**
-     * Добавляет объект для поиска
-     * @param searchable объект для добавления
-     */
     public void add(Searchable searchable) {
-        if (count < searchables.length) {
-            searchables[count] = searchable;
-            count++;
-        } else {
-            System.out.println("Невозможно добавить объект: достигнут лимит поискового движка");
-        }
+        searchables.add(searchable);
     }
 
-    /**
-     * Выполняет поиск по запросу
-     * @param query строка для поиска
-     * @return массив из до 5 найденных объектов
-     */
-    public Searchable[] search(String query) {
-        Searchable[] results = new Searchable[5];
-        int resultCount = 0;
+    public List<Searchable> search(String query) {
+        List<Searchable> results = new ArrayList<>();
 
         // Поиск по всем объектам
-        for (int i = 0; i < count && resultCount < 5; i++) {
-            Searchable searchable = searchables[i];
+        for (Searchable searchable : searchables) {
             String searchTerm = searchable.getSearchTerm();
 
             // Поиск без учета регистра
             if (searchTerm.toLowerCase().contains(query.toLowerCase())) {
-                results[resultCount] = searchable;
-                resultCount++;
+                results.add(searchable);
             }
         }
 
         return results;
     }
 
-    /**
-     * Находит наиболее подходящий объект для поискового запроса
-     * @param searchQuery поисковый запрос
-     * @return наиболее подходящий объект
-     * @throws BestResultNotFound если не найден подходящий объект
-     */
     public Searchable findBestMatch(String searchQuery) throws BestResultNotFound {
-        if (count == 0) {
+        if (searchables.isEmpty()) {
             throw new BestResultNotFound(searchQuery);
         }
 
         Searchable bestMatch = null;
         int maxOccurrences = -1;
 
-        for (int i = 0; i < count; i++) {
-            Searchable searchable = searchables[i];
+        for (Searchable searchable : searchables) {
             String searchTerm = searchable.getSearchTerm().toLowerCase();
             String query = searchQuery.toLowerCase();
 
@@ -87,12 +61,6 @@ public class SearchEngine {
         return bestMatch;
     }
 
-    /**
-     * Подсчитывает количество вхождений подстроки в строку
-     * @param text текст для поиска
-     * @param substring подстрока для подсчета
-     * @return количество вхождений
-     */
     private int countOccurrences(String text, String substring) {
         int count = 0;
         int index = 0;
@@ -107,19 +75,11 @@ public class SearchEngine {
         return count;
     }
 
-    /**
-     * Получить количество добавленных объектов
-     * @return количество объектов
-     */
     public int getCount() {
-        return count;
+        return searchables.size();
     }
 
-    /**
-     * Получить максимальную емкость поискового движка
-     * @return максимальное количество объектов
-     */
-    public int getCapacity() {
-        return searchables.length;
+    public List<Searchable> getAllSearchables() {
+        return new ArrayList<>(searchables); // Возвращаем копию для безопасности
     }
 }
