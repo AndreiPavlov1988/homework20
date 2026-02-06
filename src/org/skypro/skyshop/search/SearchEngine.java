@@ -1,7 +1,6 @@
 package org.skypro.skyshop.search;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class SearchEngine {
     private final List<Searchable> searchables;
@@ -11,12 +10,15 @@ public class SearchEngine {
         this.searchables = new ArrayList<>(capacity);
     }
 
+
     public void add(Searchable searchable) {
         searchables.add(searchable);
     }
 
-    public List<Searchable> search(String query) {
-        List<Searchable> results = new ArrayList<>();
+
+    public Map<String, Searchable> search(String query) {
+        // Используем TreeMap для автоматической сортировки по ключу (имени)
+        Map<String, Searchable> results = new TreeMap<>();
 
         // Поиск по всем объектам
         for (Searchable searchable : searchables) {
@@ -24,10 +26,28 @@ public class SearchEngine {
 
             // Поиск без учета регистра
             if (searchTerm.toLowerCase().contains(query.toLowerCase())) {
+                // Добавляем в Map, ключ - имя объекта
+                results.put(searchable.getName(), searchable);
+            }
+        }
+
+        return results;
+    }
+
+
+    public List<Searchable> searchAsList(String query) {
+        List<Searchable> results = new ArrayList<>();
+
+        for (Searchable searchable : searchables) {
+            String searchTerm = searchable.getSearchTerm();
+
+            if (searchTerm.toLowerCase().contains(query.toLowerCase())) {
                 results.add(searchable);
             }
         }
 
+        // Сортируем результаты по имени
+        results.sort(Comparator.comparing(Searchable::getName));
         return results;
     }
 
@@ -80,6 +100,6 @@ public class SearchEngine {
     }
 
     public List<Searchable> getAllSearchables() {
-        return new ArrayList<>(searchables); // Возвращаем копию для безопасности
+        return new ArrayList<>(searchables);
     }
 }

@@ -2,88 +2,132 @@ package org.skypro.skyshop.basket;
 
 import org.skypro.skyshop.product.Product;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class ProductBasket {
-    private final List<Product> products;
+    private final Map<String, List<Product>> productsMap;
 
 
     public ProductBasket() {
-        this.products = new ArrayList<>();
+        // Используем TreeMap для автоматической сортировки по имени
+        this.productsMap = new TreeMap<>();
     }
+
 
     public void addProduct(Product product) {
-        products.add(product);
+        String name = product.getName();
+
+        // Если товара с таким именем еще нет, создаем новый список
+        productsMap.putIfAbsent(name, new ArrayList<>());
+
+        // Добавляем товар в список по имени
+        productsMap.get(name).add(product);
     }
 
+
     public List<Product> removeProductsByName(String name) {
-        List<Product> removedProducts = new ArrayList<>();
-        Iterator<Product> iterator = products.iterator();
+        // Удаляем весь список товаров с данным именем
+        List<Product> removedProducts = productsMap.remove(name);
 
-        while (iterator.hasNext()) {
-            Product product = iterator.next();
-            if (product.getName().equals(name)) {
-                removedProducts.add(product);
-                iterator.remove();
-            }
-        }
+        // Если товаров не было, возвращаем пустой список
+        return removedProducts != null ? removedProducts : new ArrayList<>();
+    }
 
-        return removedProducts;
+     public List<Product> getProductsByName(String name) {
+        return productsMap.getOrDefault(name, new ArrayList<>());
     }
 
 
     public int getTotalPrice() {
         int total = 0;
-        for (Product product : products) {
-            total += product.getPrice();
+
+        // Перебираем все списки товаров
+        for (List<Product> productList : productsMap.values()) {
+            for (Product product : productList) {
+                total += product.getPrice();
+            }
         }
+
         return total;
     }
 
+    /**
+     * Метод подсчета количества специальных товаров
+     * @return количество специальных товаров в корзине
+     */
     public int countSpecialProducts() {
         int count = 0;
-        for (Product product : products) {
-            if (product.isSpecial()) {
-                count++;
+
+        for (List<Product> productList : productsMap.values()) {
+            for (Product product : productList) {
+                if (product.isSpecial()) {
+                    count++;
+                }
             }
         }
+
         return count;
     }
 
+    /**
+     * Метод печати содержимого корзины
+     */
     public void printContents() {
-        if (products.isEmpty()) {
+        if (productsMap.isEmpty()) {
             System.out.println("в корзине пусто");
             return;
         }
 
-        for (Product product : products) {
-            System.out.println(product.toString());
+        // TreeMap автоматически сортирует ключи по имени
+        for (Map.Entry<String, List<Product>> entry : productsMap.entrySet()) {
+            String productName = entry.getKey();
+            List<Product> products = entry.getValue();
+
+            // Выводим каждый товар с данным именем
+            for (Product product : products) {
+                System.out.println(product.toString());
+            }
         }
+
         System.out.println("Итого: " + getTotalPrice());
         System.out.println("Специальных товаров: " + countSpecialProducts());
     }
 
     public boolean containsProduct(String productName) {
-        for (Product product : products) {
-            if (product.getName().equals(productName)) {
-                return true;
-            }
-        }
-        return false;
+        return productsMap.containsKey(productName);
     }
+
+    public int getUniqueProductNamesCount() {
+        return productsMap.size();
+    }
+
+     public int getTotalProductCount() {
+        int total = 0;
+
+        for (List<Product> productList : productsMap.values()) {
+            total += productList.size();
+        }
+
+        return total;
+    }
+
 
     public void clear() {
-        products.clear();
+        productsMap.clear();
     }
 
-    public int getProductCount() {
-        return products.size();
+    public List<Product> getAllProducts() {
+        List<Product> allProducts = new ArrayList<>();
+
+        for (List<Product> productList : productsMap.values()) {
+            allProducts.addAll(productList);
+        }
+
+        return allProducts;
     }
 
-    public List<Product> getProducts() {
-        return new ArrayList<>(products); // Возвращаем копию для безопасности
+    public List<String> getAllProductNames() {
+        return new ArrayList<>(productsMap.keySet());
     }
 }
 
