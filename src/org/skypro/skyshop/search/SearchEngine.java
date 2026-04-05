@@ -2,12 +2,13 @@ package org.skypro.skyshop.search;
 
 import java.util.*;
 
+
 public class SearchEngine {
-    private final List<Searchable> searchables;
+    private final Set<Searchable> searchables;
 
 
     public SearchEngine(int capacity) {
-        this.searchables = new ArrayList<>(capacity);
+        this.searchables = new HashSet<>();
     }
 
 
@@ -16,9 +17,9 @@ public class SearchEngine {
     }
 
 
-    public Map<String, Searchable> search(String query) {
-        // Используем TreeMap для автоматической сортировки по ключу (имени)
-        Map<String, Searchable> results = new TreeMap<>();
+    public Set<Searchable> search(String query) {
+        // Используем TreeSet с компаратором для сортировки
+        Set<Searchable> results = new TreeSet<>(new SearchableNameLengthComparator());
 
         // Поиск по всем объектам
         for (Searchable searchable : searchables) {
@@ -26,8 +27,7 @@ public class SearchEngine {
 
             // Поиск без учета регистра
             if (searchTerm.toLowerCase().contains(query.toLowerCase())) {
-                // Добавляем в Map, ключ - имя объекта
-                results.put(searchable.getName(), searchable);
+                results.add(searchable);
             }
         }
 
@@ -46,10 +46,11 @@ public class SearchEngine {
             }
         }
 
-        // Сортируем результаты по имени
-        results.sort(Comparator.comparing(Searchable::getName));
+        // Сортируем результаты по длине имени (от длинного к короткому)
+        results.sort(new SearchableNameLengthComparator());
         return results;
     }
+
 
     public Searchable findBestMatch(String searchQuery) throws BestResultNotFound {
         if (searchables.isEmpty()) {
@@ -81,6 +82,7 @@ public class SearchEngine {
         return bestMatch;
     }
 
+
     private int countOccurrences(String text, String substring) {
         int count = 0;
         int index = 0;
@@ -95,9 +97,11 @@ public class SearchEngine {
         return count;
     }
 
+
     public int getCount() {
         return searchables.size();
     }
+
 
     public List<Searchable> getAllSearchables() {
         return new ArrayList<>(searchables);
