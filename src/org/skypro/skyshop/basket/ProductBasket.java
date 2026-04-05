@@ -3,6 +3,8 @@ package org.skypro.skyshop.basket;
 import org.skypro.skyshop.product.Product;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 
 public class ProductBasket {
     private final Map<String, List<Product>> productsMap;
@@ -24,7 +26,6 @@ public class ProductBasket {
         productsMap.get(name).add(product);
     }
 
-
     public List<Product> removeProductsByName(String name) {
         // Удаляем весь список товаров с данным именем
         List<Product> removedProducts = productsMap.remove(name);
@@ -33,82 +34,60 @@ public class ProductBasket {
         return removedProducts != null ? removedProducts : new ArrayList<>();
     }
 
-     public List<Product> getProductsByName(String name) {
+
+    public List<Product> getProductsByName(String name) {
         return productsMap.getOrDefault(name, new ArrayList<>());
     }
 
 
     public int getTotalPrice() {
-        int total = 0;
-
-        // Перебираем все списки товаров
-        for (List<Product> productList : productsMap.values()) {
-            for (Product product : productList) {
-                total += product.getPrice();
-            }
-        }
-
-        return total;
+        return getAllProductsStream()
+                .mapToInt(Product::getPrice)
+                .sum();
     }
 
-    /**
-     * Метод подсчета количества специальных товаров
-     * @return количество специальных товаров в корзине
-     */
-    public int countSpecialProducts() {
-        int count = 0;
 
-        for (List<Product> productList : productsMap.values()) {
-            for (Product product : productList) {
-                if (product.isSpecial()) {
-                    count++;
-                }
-            }
-        }
-
-        return count;
+    private long getSpecialCount() {
+        return getAllProductsStream()
+                .filter(Product::isSpecial)
+                .count();
     }
 
-    /**
-     * Метод печати содержимого корзины
-     */
+
     public void printContents() {
         if (productsMap.isEmpty()) {
             System.out.println("в корзине пусто");
             return;
         }
 
-        // TreeMap автоматически сортирует ключи по имени
-        for (Map.Entry<String, List<Product>> entry : productsMap.entrySet()) {
-            String productName = entry.getKey();
-            List<Product> products = entry.getValue();
+        // Выводим все товары
+        getAllProductsStream()
+                .forEach(System.out::println);
 
-            // Выводим каждый товар с данным именем
-            for (Product product : products) {
-                System.out.println(product.toString());
-            }
-        }
-
+        // Выводим итоговую информацию
         System.out.println("Итого: " + getTotalPrice());
-        System.out.println("Специальных товаров: " + countSpecialProducts());
+        System.out.println("Специальных товаров: " + getSpecialCount());
     }
+
+
+    private java.util.stream.Stream<Product> getAllProductsStream() {
+        return productsMap.values().stream()
+                .flatMap(Collection::stream);
+    }
+
 
     public boolean containsProduct(String productName) {
         return productsMap.containsKey(productName);
     }
 
+
     public int getUniqueProductNamesCount() {
         return productsMap.size();
     }
 
-     public int getTotalProductCount() {
-        int total = 0;
 
-        for (List<Product> productList : productsMap.values()) {
-            total += productList.size();
-        }
-
-        return total;
+    public int getTotalProductCount() {
+        return (int) getAllProductsStream().count();
     }
 
 
@@ -116,15 +95,12 @@ public class ProductBasket {
         productsMap.clear();
     }
 
+
     public List<Product> getAllProducts() {
-        List<Product> allProducts = new ArrayList<>();
-
-        for (List<Product> productList : productsMap.values()) {
-            allProducts.addAll(productList);
-        }
-
-        return allProducts;
+        return getAllProductsStream()
+                .collect(Collectors.toList());
     }
+
 
     public List<String> getAllProductNames() {
         return new ArrayList<>(productsMap.keySet());

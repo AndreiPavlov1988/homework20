@@ -9,13 +9,15 @@ import org.skypro.skyshop.search.BestResultNotFound;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class App {
         public static void main(String[] args) {
-                System.out.println("=== Демонстрация работы интернет-магазина с Set и компаратором ===\n");
+                System.out.println("=== Демонстрация работы интернет-магазина с Stream API ===\n");
 
-                // Создаем товары с разной длиной имен
+                // Создаем товары
                 Product laptop = new SimpleProduct("Ноутбук игровой мощный", 75000);
+                Product laptop2 = new SimpleProduct("Ноутбук игровой мощный", 80000); // Дубликат имени
                 Product phone = new DiscountedProduct("Смартфон", 45000, 20);
                 Product headphones = new FixPriceProduct("Наушники");
                 Product mouse = new SimpleProduct("Мышь", 1500);
@@ -24,22 +26,20 @@ public class App {
                 Product monitor = new SimpleProduct("Монитор", 20000);
                 Product charger = new SimpleProduct("Зарядное устройство", 1000);
 
-                // Создаем статьи с разной длиной заголовков
+                // Создаем статьи
                 Article laptopArticle = new Article(
                         "Обзор игрового ноутбука с мощной видеокартой",
-                        "Игровой ноутбук обладает мощной видеокартой и процессором. " +
-                                "Идеально подходит для игр и работы с графикой."
+                        "Игровой ноутбук обладает мощной видеокартой и процессором."
                 );
 
                 Article phoneArticle = new Article(
                         "Смартфоны",
-                        "Обзор лучших смартфонов 2024 года. Смартфоны стали мощнее и умнее."
+                        "Обзор лучших смартфонов 2024 года."
                 );
 
                 Article headphonesArticle = new Article(
                         "Наушники для геймеров и музыки",
-                        "Лучшие наушники для игр. Важен качественный звук и комфорт. " +
-                                "Беспроводные наушники удобны для игр."
+                        "Лучшие наушники для игр. Важен качественный звук."
                 );
 
                 Article gamingArticle = new Article(
@@ -47,21 +47,15 @@ public class App {
                         "Мыши, клавиатуры, коврики для игр."
                 );
 
-                Article monitorArticle = new Article(
-                        "Выбор монитора",
-                        "Как выбрать монитор для игр: частота обновления, время отклика."
-                );
-
-                // Часть 1: Демонстрация Set (уникальность)
-                System.out.println("=== Часть 1: Демонстрация уникальности объектов в SearchEngine ===\n");
+                // Часть 1: Демонстрация поискового движка со Stream API
+                System.out.println("=== Часть 1: Демонстрация SearchEngine с Stream API ===\n");
 
                 SearchEngine searchEngine = new SearchEngine(20);
 
-                System.out.println("1. Добавляем объекты в поисковый движок:");
+                // Добавляем объекты
                 searchEngine.add(laptop);
-                searchEngine.add(laptop); // Попытка добавить дубликат
+                searchEngine.add(laptop2); // Будет проигнорирован (дубликат имени)
                 searchEngine.add(phone);
-                searchEngine.add(phone); // Попытка добавить дубликат
                 searchEngine.add(headphones);
                 searchEngine.add(mouse);
                 searchEngine.add(keyboard);
@@ -69,115 +63,97 @@ public class App {
                 searchEngine.add(monitor);
                 searchEngine.add(charger);
                 searchEngine.add(laptopArticle);
-                searchEngine.add(laptopArticle); // Попытка добавить дубликат
                 searchEngine.add(phoneArticle);
                 searchEngine.add(headphonesArticle);
                 searchEngine.add(gamingArticle);
-                searchEngine.add(monitorArticle);
 
-                System.out.println("   Реальное количество уникальных объектов: " + searchEngine.getCount());
-                System.out.println("   (Дубликаты были проигнорированы благодаря equals/hashCode)");
+                System.out.println("В поисковый движок добавлено уникальных объектов: " + searchEngine.getCount());
 
-                // Часть 2: Демонстрация сортировки
-                System.out.println("\n=== Часть 2: Демонстрация сортировки результатов поиска ===\n");
-
-                System.out.println("2. Поиск по слову 'игровой' (сортировка от длинного названия к короткому):");
+                System.out.println("\n1. Поиск по слову 'игровой' (Stream API + TreeSet с компаратором):");
                 Set<Searchable> results1 = searchEngine.search("игровой");
                 System.out.println("   Найдено результатов: " + results1.size());
 
                 int counter = 1;
                 for (Searchable item : results1) {
-                        String name = item.getName();
-                        System.out.println("   " + counter + ". \"" + name + "\" (длина: " + name.length() + " симв.) - " + item.getContentType());
+                        System.out.println("   " + counter + ". \"" + item.getName() + "\" (длина: " +
+                                item.getName().length() + " симв.) - " + item.getContentType());
                         counter++;
                 }
 
-                System.out.println("\n3. Поиск по слову 'наушники' (сортировка от длинного названия к короткому):");
+                System.out.println("\n2. Поиск по слову 'наушники' (Stream API):");
                 Set<Searchable> results2 = searchEngine.search("наушники");
                 System.out.println("   Найдено результатов: " + results2.size());
 
                 counter = 1;
                 for (Searchable item : results2) {
-                        String name = item.getName();
-                        System.out.println("   " + counter + ". \"" + name + "\" (длина: " + name.length() + " симв.) - " + item.getContentType());
+                        System.out.println("   " + counter + ". \"" + item.getName() + "\" (длина: " +
+                                item.getName().length() + " симв.)");
                         counter++;
                 }
 
-                System.out.println("\n4. Поиск по слову 'монитор' (сортировка от длинного названия к короткому):");
-                Set<Searchable> results3 = searchEngine.search("монитор");
-                System.out.println("   Найдено результатов: " + results3.size());
-
-                counter = 1;
-                for (Searchable item : results3) {
-                        String name = item.getName();
-                        System.out.println("   " + counter + ". \"" + name + "\" (длина: " + name.length() + " симв.) - " + item.getContentType());
-                        // Для статей выводим отрывок
-                        if (item.getContentType().equals("ARTICLE")) {
-                                String content = item.getSearchTerm();
-                                if (content.length() > 60) {
-                                        System.out.println("      " + content.substring(0, 60) + "...");
-                                }
-                        }
-                        counter++;
-                }
-
-                System.out.println("\n5. Поиск по слову 'смартфон' (сортировка от длинного названия к короткому):");
-                Set<Searchable> results4 = searchEngine.search("смартфон");
-                System.out.println("   Найдено результатов: " + results4.size());
-
-                counter = 1;
-                for (Searchable item : results4) {
-                        String name = item.getName();
-                        System.out.println("   " + counter + ". \"" + name + "\" (длина: " + name.length() + " симв.)");
-                        counter++;
-                }
-
-                System.out.println("\n6. Поиск по слову 'игр' (проверка сортировки при одинаковой длине):");
-                Set<Searchable> results5 = searchEngine.search("игр");
-                System.out.println("   Найдено результатов: " + results5.size());
-
-                counter = 1;
-                for (Searchable item : results5) {
-                        String name = item.getName();
-                        System.out.println("   " + counter + ". \"" + name + "\" (длина: " + name.length() + " симв.) - " + item.getContentType());
-                        counter++;
-                }
-
-                // Часть 3: Демонстрация equals/hashCode
-                System.out.println("\n=== Часть 3: Демонстрация работы equals/hashCode ===\n");
-
-                System.out.println("7. Проверка equals для продуктов:");
-                Product laptop1 = new SimpleProduct("Ноутбук", 50000);
-                Product laptop2 = new SimpleProduct("Ноутбук", 60000);
-                Product laptop3 = new SimpleProduct("Другой ноутбук", 55000);
-
-                System.out.println("   laptop1.equals(laptop2): " + laptop1.equals(laptop2) + " (должно быть true - одинаковые имена)");
-                System.out.println("   laptop1.equals(laptop3): " + laptop1.equals(laptop3) + " (должно быть false - разные имена)");
-
-                System.out.println("\n8. Проверка equals для статей:");
-                Article article1 = new Article("Заголовок", "Текст статьи");
-                Article article2 = new Article("Заголовок", "Другой текст");
-                Article article3 = new Article("Другой заголовок", "Текст статьи");
-
-                System.out.println("   article1.equals(article2): " + article1.equals(article2) + " (должно быть true - одинаковые заголовки)");
-                System.out.println("   article1.equals(article3): " + article1.equals(article3) + " (должно быть false - разные заголовки)");
-
-                System.out.println("\n9. Проверка hashCode:");
-                System.out.println("   hashCode(laptop1): " + laptop1.hashCode());
-                System.out.println("   hashCode(laptop2): " + laptop2.hashCode() + " (должен быть одинаковым)");
-                System.out.println("   hashCode(laptop3): " + laptop3.hashCode() + " (должен отличаться)");
-
-                // Часть 4: Проверка корзины (для совместимости)
-                System.out.println("\n=== Часть 4: Проверка обратной совместимости корзины ===\n");
+                // Часть 2: Демонстрация корзины со Stream API
+                System.out.println("\n=== Часть 2: Демонстрация ProductBasket с Stream API ===\n");
 
                 ProductBasket basket = new ProductBasket();
+
+                System.out.println("3. Добавляем товары в корзину:");
                 basket.addProduct(laptop);
+                basket.addProduct(laptop2); // Второй ноутбук с таким же именем
                 basket.addProduct(phone);
                 basket.addProduct(headphones);
                 basket.addProduct(mouse);
+                basket.addProduct(keyboard);
+                basket.addProduct(tablet);
+                basket.addProduct(monitor);
+                basket.addProduct(charger);
 
-                System.out.println("Содержимое корзины:");
+                System.out.println("   Уникальных имен товаров: " + basket.getUniqueProductNamesCount());
+                System.out.println("   Всего товаров: " + basket.getTotalProductCount());
+
+                System.out.println("\n4. Печать содержимого корзины (через Stream API forEach):");
                 basket.printContents();
+
+                System.out.println("\n5. Проверка методов корзины через Stream API:");
+                System.out.println("   Общая стоимость: " + basket.getTotalPrice() + " руб.");
+                System.out.println("   Содержит 'Смартфон': " + basket.containsProduct("Смартфон"));
+                System.out.println("   Содержит 'Телевизор': " + basket.containsProduct("Телевизор"));
+
+                System.out.println("\n6. Получение всех товаров через Stream API:");
+                List<Product> allProducts = basket.getAllProducts();
+                System.out.println("   Всего товаров в списке: " + allProducts.size());
+                System.out.println("   Первые 3 товара:");
+                allProducts.stream().limit(3).forEach(p -> System.out.println("   - " + p.getName()));
+
+                System.out.println("\n7. Удаление товаров по имени:");
+                System.out.println("   Удаляем 'Мышь':");
+                List<Product> removed = basket.removeProductsByName("Мышь");
+                System.out.println("   Удалено товаров: " + removed.size());
+
+                System.out.println("\n   Содержимое корзины после удаления:");
+                basket.printContents();
+
+                // Часть 3: Дополнительная демонстрация Stream API
+                System.out.println("\n=== Часть 3: Дополнительные возможности Stream API ===\n");
+
+                System.out.println("8. Сортировка товаров по цене (Stream API демонстрация):");
+                basket.getAllProducts().stream()
+                        .sorted((p1, p2) -> Integer.compare(p2.getPrice(), p1.getPrice()))
+                        .limit(3)
+                        .forEach(p -> System.out.println("   " + p.getName() + ": " + p.getPrice() + " руб."));
+
+                System.out.println("\n9. Фильтрация товаров дороже 20000 руб.:");
+                long expensiveCount = basket.getAllProducts().stream()
+                        .filter(p -> p.getPrice() > 20000)
+                        .count();
+                System.out.println("   Товаров дороже 20000 руб.: " + expensiveCount);
+
+                System.out.println("\n10. Группировка товаров по типу (Special/Regular):");
+                basket.getAllProducts().stream()
+                        .collect(Collectors.groupingBy(
+                                p -> p.isSpecial() ? "Специальные" : "Обычные",
+                                Collectors.counting()
+                        ))
+                        .forEach((type, count) -> System.out.println("   " + type + ": " + count));
 
                 System.out.println("\n=== Демонстрация завершена ===");
         }

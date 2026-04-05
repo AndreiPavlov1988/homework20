@@ -1,6 +1,7 @@
 package org.skypro.skyshop.search;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class SearchEngine {
@@ -18,37 +19,17 @@ public class SearchEngine {
 
 
     public Set<Searchable> search(String query) {
-        // Используем TreeSet с компаратором для сортировки
-        Set<Searchable> results = new TreeSet<>(new SearchableNameLengthComparator());
-
-        // Поиск по всем объектам
-        for (Searchable searchable : searchables) {
-            String searchTerm = searchable.getSearchTerm();
-
-            // Поиск без учета регистра
-            if (searchTerm.toLowerCase().contains(query.toLowerCase())) {
-                results.add(searchable);
-            }
-        }
-
-        return results;
+        return searchables.stream()
+                .filter(searchable -> searchable.getSearchTerm().toLowerCase().contains(query.toLowerCase()))
+                .collect(Collectors.toCollection(() -> new TreeSet<>(new SearchableNameLengthComparator())));
     }
 
 
     public List<Searchable> searchAsList(String query) {
-        List<Searchable> results = new ArrayList<>();
-
-        for (Searchable searchable : searchables) {
-            String searchTerm = searchable.getSearchTerm();
-
-            if (searchTerm.toLowerCase().contains(query.toLowerCase())) {
-                results.add(searchable);
-            }
-        }
-
-        // Сортируем результаты по длине имени (от длинного к короткому)
-        results.sort(new SearchableNameLengthComparator());
-        return results;
+        return searchables.stream()
+                .filter(searchable -> searchable.getSearchTerm().toLowerCase().contains(query.toLowerCase()))
+                .sorted(new SearchableNameLengthComparator())
+                .collect(Collectors.toList());
     }
 
 
@@ -57,29 +38,16 @@ public class SearchEngine {
             throw new BestResultNotFound(searchQuery);
         }
 
-        Searchable bestMatch = null;
-        int maxOccurrences = -1;
+        String query = searchQuery.toLowerCase();
 
-        for (Searchable searchable : searchables) {
-            String searchTerm = searchable.getSearchTerm().toLowerCase();
-            String query = searchQuery.toLowerCase();
-
-            // Подсчет количества вхождений подстроки
-            int occurrences = countOccurrences(searchTerm, query);
-
-            // Если нашли объект с большим количеством вхождений
-            if (occurrences > maxOccurrences) {
-                maxOccurrences = occurrences;
-                bestMatch = searchable;
-            }
-        }
-
-        // Если не найдено ни одного вхождения
-        if (maxOccurrences == 0) {
-            throw new BestResultNotFound(searchQuery);
-        }
-
-        return bestMatch;
+        return searchables.stream()
+                .max((s1, s2) -> {
+                    int occurrences1 = countOccurrences(s1.getSearchTerm().toLowerCase(), query);
+                    int occurrences2 = countOccurrences(s2.getSearchTerm().toLowerCase(), query);
+                    return Integer.compare(occurrences1, occurrences2);
+                })
+                .filter(searchable -> countOccurrences(searchable.getSearchTerm().toLowerCase(), query) > 0)
+                .orElseThrow(() -> new BestResultNotFound(searchQuery));
     }
 
 

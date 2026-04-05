@@ -65,45 +65,6 @@ public abstract class Product implements Searchable {
      */
     public abstract int getPrice();
 
-    /**
-     * Проверяет, является ли товар специальным
-     * @return true если товар специальный, false если обычный
-     */
-    public abstract boolean isSpecial();
-
-    /**
-     * Возвращает строковое представление товара
-     * @return строковое представление
-     */
-    @Override
-    public abstract String toString();
-
-    /**
-     * Переопределение equals - сравнивает только по имени
-     * @param obj объект для сравнения
-     * @return true если имена одинаковые
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Product product = (Product) obj;
-        return Objects.equals(name, product.name);
-    }
-
-    /**
-     * Переопределение hashCode - использует только имя
-     * @return хеш-код на основе имени
-     */
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
-    }
-}
-
-
-    public abstract int getPrice();
-
 
     public abstract boolean isSpecial();
 
